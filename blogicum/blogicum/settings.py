@@ -25,8 +25,7 @@ SECRET_KEY = 'django-insecure-itu0p!x0$jfd=j(9t+!%+_ww21)ljngz#4i9fc4-)4rv9$du6e
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS: list = []
 
 # Application definition
 
@@ -133,7 +132,7 @@ STATICFILES_DIRS = [BASE_DIR / 'static_dev']
 
 COUNT_SHOW_POST = 5
 
-MEDIA_ROOT=BASE_DIR/'media'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 # Подключаем бэкенд filebased.EmailBackend:
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
