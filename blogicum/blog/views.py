@@ -1,14 +1,16 @@
 from django.db.models import Count
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse, HttpRequest, Http404
 from django.shortcuts import render, get_object_or_404, redirect, reverse
 from django.utils.timezone import now
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, UpdateView, DeleteView, DetailView
 
-from blog.core import paginator, get_post
+from blog.query_posts import get_posts
+from blog.mixins import OnlyAuthorMixin, ChangeCommentMixin
+from blog.paginator import paginator
 from blog.forms import PostForm, CommentForm
 from blog.models import Post, Category, Comment
 
@@ -17,7 +19,7 @@ User = get_user_model()
 
 def index(request: HttpRequest) -> HttpResponse:
     """Функция отображает посты на главной странице"""
-    post_list = get_post(query_2=True)
+    post_list = get_posts(filtration=True, annotation=True)
     page_obj = paginator(request, post_list)
     context = (
         {'page_obj': page_obj}
@@ -33,18 +35,14 @@ def category_posts(request: HttpRequest, category_slug: str) -> HttpResponse:
             is_published=True
         )
     )
-    post_list = get_post(query_2=True).filter(
-        category__slug=category_slug)
+    post_list = get_posts(
+        manager=category.posts,
+        filtration=True,
+        annotation=True
+    )
     page_obj = paginator(request, post_list)
     context = {'category': category, 'page_obj': page_obj}
     return render(request, 'blog/category.html', context)
-
-
-class OnlyAuthorMixin(UserPassesTestMixin):
-
-    def test_func(self):
-        object = self.get_object()
-        return object.author == self.request.user
 
 
 class PostDetailView(DetailView):
@@ -65,9 +63,9 @@ class PostDetailView(DetailView):
     def get_object(self):
         post = get_object_or_404(Post, pk=self.kwargs['post_id'])
         if self.request.user != post.author and (
-            not post.is_published
-            or not post.category.is_published
-            or post.pub_date > now()
+                not post.is_published
+                or not post.category.is_published
+                or post.pub_date > now()
         ):
             raise Http404
         return post
@@ -78,14 +76,12 @@ def profile(request, username) -> HttpResponse:
     profile = get_object_or_404(User, username=username)
 
     if request.user.username == username:
-        posts = get_post().filter(
-            author__username=username,
-        ).annotate(comment_count=Count('comments')).order_by('-pub_date')
+        posts = get_posts(manager=profile.posts, annotation=True)
     else:
-        posts = get_post().filter(
+        posts = get_posts(annotation=True).filter(
             author__username=username,
             category__is_published=True,
-        ).annotate(comment_count=Count('comments')).order_by('-pub_date')
+        )
     page_obj = paginator(request, posts)
     context = (
         {'page_obj': page_obj, 'profile': profile}
@@ -182,26 +178,6 @@ class AddCommentCreateView(LoginRequiredMixin, CreateView):
         return reverse(
             'blog:post_detail',
             kwargs={'post_id': self.kwargs[self.pk_url_kwarg]}
-        )
-
-
-class ChangeCommentMixin(OnlyAuthorMixin):
-    model = Comment
-    template_name = 'blog/comment.html'
-    pk_url_kwarg = 'comment_id'
-
-    def get_object(self):
-        post = get_object_or_404(
-            Comment,
-            pk=self.kwargs['comment_id'],
-            post__id=self.kwargs['post_id']
-        )
-        return post
-
-    def get_success_url(self):
-        return reverse(
-            'blog:post_detail',
-            kwargs={'post_id': self.kwargs['post_id']}
         )
 
 

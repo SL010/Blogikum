@@ -77,7 +77,7 @@ class Post(BaseModel):
         Category,
         on_delete=models.SET_NULL,
         null=True,
-        verbose_name='Категория'
+        verbose_name='Категория',
     )
 
     class Meta:
@@ -99,3 +99,6 @@ class Comment(models.Model):
     class Meta:
         ordering = ('created_at',)
         default_related_name = 'comments'
+
+    def __str__(self):
+        return self.text
