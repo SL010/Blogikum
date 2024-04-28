@@ -3,7 +3,7 @@ from django.db.models import Count
 from django.utils.timezone import now
 
 from blog.models import Post
-from blogicum.settings import NUMBER_ELEMENTS
+from .constans import NUMBER_ELEMENTS
 
 
 def paginator(request, post_list):
