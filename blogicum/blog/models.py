@@ -1,5 +1,5 @@
-from django.db import models
 from django.contrib.auth import get_user_model
+from django.db import models
 
 from .constans import MAX_LENGTH_STR
 
@@ -35,6 +35,9 @@ class Category(BaseModel):
         verbose_name = 'категория'
         verbose_name_plural = 'Категории'
 
+    def __str__(self):
+        return self.title
+
 
 class Location(BaseModel):
     name = models.CharField('Название места', max_length=MAX_LENGTH_STR)
@@ -42,6 +45,9 @@ class Location(BaseModel):
     class Meta:
         verbose_name = 'местоположение'
         verbose_name_plural = 'Местоположения'
+
+    def __str__(self):
+        return self.name
 
 
 class Post(BaseModel):
@@ -86,7 +92,6 @@ class Comment(models.Model):
     post = models.ForeignKey(
         Post,
         on_delete=models.CASCADE,
-        related_name='comments',
     )
     created_at = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE)

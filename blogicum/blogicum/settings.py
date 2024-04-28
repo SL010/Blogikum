@@ -25,7 +25,10 @@ SECRET_KEY = 'django-insecure-itu0p!x0$jfd=j(9t+!%+_ww21)ljngz#4i9fc4-)4rv9$du6e
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS: list = []
+# ALLOWED_HOSTS: list = [
+#     'www.SL010.pythonanywhere.com',
+#     'SL010.pythonanywhere.com',
+# ]
 
 # Application definition
 
@@ -144,3 +147,5 @@ LOGIN_REDIRECT_URL = 'blog:index'
 LOGIN_URL = 'login'
 
 CSRF_FAILURE_VIEW = 'pages.views.csrf_failure'
+
+NUMBER_ELEMENTS = 10
