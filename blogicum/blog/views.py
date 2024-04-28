@@ -8,11 +8,12 @@ from django.utils.timezone import now
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, UpdateView, DeleteView, DetailView
 
+from blog.forms import PostForm, CommentForm
 from blog.query_posts import get_posts
 from blog.mixins import OnlyAuthorMixin, ChangeCommentMixin
-from blog.paginator import paginator
-from blog.forms import PostForm, CommentForm
 from blog.models import Post, Category, Comment
+from blog.paginator import paginator
+
 
 User = get_user_model()
 

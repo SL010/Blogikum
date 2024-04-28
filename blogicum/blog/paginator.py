@@ -1,6 +1,6 @@
 from django.core.paginator import Paginator
 
-from blogicum.settings import NUMBER_ELEMENTS
+from blog.constans import NUMBER_ELEMENTS
 
 
 def paginator(request, post_list):
