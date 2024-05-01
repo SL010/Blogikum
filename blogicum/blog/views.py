@@ -78,9 +78,10 @@ def profile(request, username) -> HttpResponse:
     if request.user.username == username:
         posts = get_posts(manager=profile.posts, annotation=True)
     else:
-        posts = get_posts(annotation=True).filter(
-            author__username=username,
-            category__is_published=True,
+        posts = get_posts(
+            manager=profile.posts,
+            filtration=True,
+            annotation=True,
         )
     page_obj = paginator(request, posts)
     context = (

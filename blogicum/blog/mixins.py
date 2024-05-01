@@ -17,12 +17,12 @@ class ChangeCommentMixin(OnlyAuthorMixin):
     pk_url_kwarg = 'comment_id'
 
     def get_object(self):
-        post = get_object_or_404(
+        comments = get_object_or_404(
             Comment,
             pk=self.kwargs[self.pk_url_kwarg],
             post__id=self.kwargs['post_id']
         )
-        return post
+        return comments
 
     def get_success_url(self):
         return reverse(
